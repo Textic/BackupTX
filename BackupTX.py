@@ -1,10 +1,6 @@
 import os
 import shutil
 
-dirr = {}
-k = 0
-dir_path = os.path.dirname(__file__)
-
 def GetLastDir(path):
     LastDir = os.path.basename(os.path.normpath(path))
     return LastDir
@@ -29,6 +25,10 @@ def RemoveDir(path): # Remove backup dir
         except:
             pass
 
+dirr = {}
+dirlist = []
+dir_path = os.path.dirname(__file__)
+
 RemoveDir('BACKUP.zip')
 RemoveDir('backup')
 
@@ -38,13 +38,27 @@ for path in os.listdir(dir_path): # Get all files dir from dir.txt and save in d
     if path == 'dir.txt':
         with open(path) as f:
             for line in f:
-                dirr[k] = line
-                k = k + 1
+                dirr[GetLastDir(FixDir(line))] = {
+                    'name': GetLastDir(FixDir(line)),
+                    'path': FixDir(line)
+                }
 
-for i in range(len(dirr)): # This loop create all backups from dir.txt
+for i in dirr: # This loop create all backups from dir.txt
     backdir = ''
-    backdir = os.path.join(backup_path, GetLastDir(FixDir(dirr[i])))
-    shutil.copytree(FixDir(dirr[i]), backdir)
+    backdir = os.path.join(backup_path, dirr[i].get('name'))
+    shutil.copytree(dirr[i].get('path'), backdir)
+
+# for path in os.listdir(dir_path): # Get all files dir from dir.txt and save in dirr dict
+#     if path == 'dir.txt':
+#         with open(path) as f:
+#             for line in f:
+#                 dirr[k] = line
+#                 k += 1
+
+# for i in range(len(dirr)): # This loop create all backups from dir.txt
+#     backdir = ''
+#     backdir = os.path.join(backup_path, GetLastDir(FixDir(dirr[i])))
+#     shutil.copytree(FixDir(dirr[i]), backdir)
 
 shutil.make_archive('BACKUP', 'zip', backup_path) # Create backup zip file
 
