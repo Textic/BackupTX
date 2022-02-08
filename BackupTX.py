@@ -49,3 +49,4 @@ for i in range(len(dirr)): # This loop create all backups from dir.txt
 shutil.make_archive('BACKUP', 'zip', backup_path) # Create backup zip file
 
 RemoveDir('backup')
+u = 1
