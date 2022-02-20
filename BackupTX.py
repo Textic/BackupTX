@@ -25,6 +25,7 @@ def RemoveDir(path): # Remove backup dir
         except:
             pass
 
+AllDiskLetters = ["a:", "b:", "c:", "d:", "e:", "f:", "g:", "h:", "i:", "j:", "k:", "l:", "m:", "n:", "o:", "p:", "q:", "r:", "s:", "t:", "u:", "v:", "w:", "x:", "y:", "z:"]
 dirr = {}
 dir_path = os.path.dirname(__file__)
 backup_path = os.path.join(dir_path, 'backup') # Create backup folder dir variable
@@ -44,6 +45,8 @@ while menu != 0:
             if path == 'dir.txt':
                 with open(path) as f:
                     for line in f:
+                        if not line[:2].lower() in AllDiskLetters:
+                            continue
                         dirr[GetLastDir(FixDir(line))] = {
                             'name': GetLastDir(FixDir(line)),
                             'path': FixDir(line)
