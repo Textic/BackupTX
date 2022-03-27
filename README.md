@@ -1,5 +1,5 @@
 # BackupTX
-Simple Backup Python Script
+Simple Backup Python Script for Windows
 
 # Sample Usage
 Enter in dir.txt all paths
