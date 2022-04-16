@@ -88,7 +88,7 @@ while menu != 0:
                 backdir = ''
                 backdir = os.path.join(backup_path, dirr[i].get('name'))
                 shutil.copytree(dirr[i].get('path'), backdir)
-                print(f'Backup {dirr[i].get("name")} created')
+                print(f'Backup [{dirr[i].get("name")}] created')
         if dirr[i]['status'] == True:
             with open(FixDir(backup_path) + 'locations.txt', "w") as f: # Write all backups in locations.txt
                 for i in dirr:
