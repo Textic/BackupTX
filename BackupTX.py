@@ -95,7 +95,7 @@ while menu != 0:
                     f.write(f'{dirr[i].get("name")};{dirr[i].get("path")}\n')
         shutil.make_archive('BACKUP', 'zip', backup_path) # Create backup zip file
         RemoveDir('backup') # Remove backup folder
-        press()
+        Press()
     if opt == 2: # Restore
         if GetRestoreList(1) != False:
             for i in dirr: # Restore all backups
@@ -103,17 +103,17 @@ while menu != 0:
                     shutil.copytree(FixDir(backup_path) + dirr[i].get('name'), dirr[i].get('path'))
                     print(f'{dirr[i].get("name")} Restored')
             RemoveDir('backup') # Remove backup folder
-            press()
+            Press()
         else:
             print('BACKUP.zip not found!')
-            press()
+            Press()
     if opt == 3: # Show\Edit list
         if GetRestoreList(1) != False:
             ShowList(dirr)
-            press()
+            Press()
         else:
             print('BACKUP.zip not found!')
-            press()
+            Press()
     if opt == 4: # Refresh list
         dirr = GetRestoreList(2)
     if opt == 5: # Exit
