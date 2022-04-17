@@ -1,6 +1,7 @@
 import os
 import shutil
 import msvcrt
+import distutils.dir_util
 
 def GetLastDir(path):
     LastDir = os.path.basename(os.path.normpath(path))
@@ -26,11 +27,25 @@ def RemoveDir(path): # Remove backup dir
         except:
             pass
 
-def ShowList(dirr): # Show list of backup files
-    l = 1
-    for i in dirr:
-        print(f'{l}. Status: {dirr[i].get("status")}\n   Name: {dirr[i].get("name")}\n   Dir: {dirr[i].get("path")}\n')
-        l += 1
+def EditList(a): # Show list of backup files
+    b = '999'
+    while b != '':
+        os.system('cls')
+        l = 1
+        for i in a:
+            print(f'{l}. Status: {a[i].get("status")}\n   Name: {a[i].get("name")}\n   Dir: {a[i].get("path")}\n')
+            l += 1
+        b = input('Select a number if you want to edit or ENTER to continue: ')
+        if b != '':
+            j = 1
+            for p in a:
+                if j == int(b):
+                    if a[p]['status'] == True:
+                        a[p]['status'] = False
+                    else:
+                        a[p]['status'] = True
+                j += 1
+    return a
 
 def GetRestoreList(opt): # Get list of backup files
     if opt == 1:
@@ -49,18 +64,31 @@ def GetRestoreList(opt): # Get list of backup files
             return False
     elif opt == 2:
         if os.path.exists('dir.txt'): # check if dir.txt exists
-            for path in os.listdir(dir_path): # Get all files dir from dir.txt and save in dirr dict
-                if path == 'dir.txt':
-                    with open(path) as f:
-                        for line in f:
-                            if not line[:2].lower() in AllDiskLetters:
-                                continue
-                            dirr[GetLastDir(FixDir(line))] = {
-                                'name': GetLastDir(FixDir(line)),
-                                'path': FixDir(line),
-                                'status': True
-                            }
-            return dirr
+            # for path in os.listdir(dir_path): # Get all files dir from dir.txt and save in dirr dict
+            #     if path == 'dir.txt':
+            with open('dir.txt') as f:
+                for line in f:
+                    if not line[:2].lower() in AllDiskLetters:
+                        continue
+                    dirr[GetLastDir(FixDir(line))] = {
+                        'name': GetLastDir(FixDir(line)),
+                        'path': FixDir(line),
+                        'status': True
+                    }
+                return dirr
+        else:
+            return False
+    elif opt == 3:
+        if os.path.exists(FixDir(backup_path) + 'locations.txt'):
+            with open(FixDir(backup_path) + 'locations.txt', "r") as f:
+                for line in f:
+                    y, k = FixDir(line).split(';')
+                    locdir[y] = {
+                        'name': y,
+                        'path': k,
+                        'status': True
+                    }
+                return locdir
         else:
             return False
 
@@ -69,20 +97,25 @@ def Press():
     msvcrt.getch()
 
 AllDiskLetters = ["a:", "b:", "c:", "d:", "e:", "f:", "g:", "h:", "i:", "j:", "k:", "l:", "m:", "n:", "o:", "p:", "q:", "r:", "s:", "t:", "u:", "v:", "w:", "x:", "y:", "z:"]
-dirr = {}
 dir_path = os.path.dirname(__file__)
 backup_path = os.path.join(dir_path, 'backup') # Create backup folder dir variable
 menu = 1
 opt = 0
+dirr = {}
 dirr = GetRestoreList(2)
+locdir = {}
+locdir = GetRestoreList(3)
 
 while menu != 0:
     os.system('cls')
-    opt = int(input('1. Backup\n2. Restore\n3. Show\Edit List\n4. Refresh List\n5. Exit\n\nSelect option: '))
+    print('1. Backup\n2. Restore\n3. Refresh List\n4. Exit\n')
+    opt = int(msvcrt.getch().decode('utf-8'))
     os.system('cls')
     if opt == 1: # Backup
         RemoveDir('BACKUP.zip')
         RemoveDir('backup')
+        dirr = EditList(dirr)
+        os.system('cls')
         for i in dirr: # This loop create all backups from dir.txt
             if dirr[i]['status'] == True:
                 backdir = ''
@@ -98,23 +131,18 @@ while menu != 0:
         Press()
     if opt == 2: # Restore
         if GetRestoreList(1) != False:
-            for i in dirr: # Restore all backups
-                if dirr[i]['status'] == True:
-                    shutil.copytree(FixDir(backup_path) + dirr[i].get('name'), dirr[i].get('path'))
-                    print(f'{dirr[i].get("name")} Restored')
+            locdir = EditList(locdir)
+            os.system('cls')
+            for i in locdir: # Restore all backups
+                if locdir[i]['status'] == True:
+                    distutils.dir_util.copy_tree(FixDir(backup_path) + locdir[i].get('name'), locdir[i].get('path'))
+                    print(f'[ {locdir[i].get("name")} ] Restored')
             RemoveDir('backup') # Remove backup folder
             Press()
         else:
             print('BACKUP.zip not found!')
             Press()
-    if opt == 3: # Show\Edit list
-        if GetRestoreList(1) != False:
-            ShowList(dirr)
-            Press()
-        else:
-            print('BACKUP.zip not found!')
-            Press()
-    if opt == 4: # Refresh list
+    if opt == 3: # Refresh list
         dirr = GetRestoreList(2)
-    if opt == 5: # Exit
+    if opt == 4: # Exit
         break
