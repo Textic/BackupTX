@@ -116,6 +116,7 @@ while menu != 0:
         RemoveDir('backup')
         dirr = EditList(dirr)
         os.system('cls')
+        print('Backup in progress...\n')
         for i in dirr: # This loop create all backups from dir.txt
             if dirr[i]['status'] == True:
                 backdir = ''
